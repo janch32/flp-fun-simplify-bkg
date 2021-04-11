@@ -1,8 +1,7 @@
 all: simplify-bkg
 
 clean:
-	rm -rf simplify-bkg
-	rm -rf src/*.o src/*.hi
+	rm -rf simplify-bkg *.o *.hi
 
 simplify-bkg:
-	ghc -isrc -o simplify-bkg src/Main.hs
+	ghc -o simplify-bkg Main.hs
