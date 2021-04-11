@@ -5,11 +5,11 @@ import Common
 firstStep :: Grammar -> Grammar
 firstStep g@(Grammar n t s p) =
     Grammar tnt t s (filterRules p tnt (t++tnt))
-    where tnt = terminalNonterms g [s]
+    where tnt = terminalNonterms g []
 
 terminalNonterms :: Grammar -> [Nonterm] -> [Nonterm]
 terminalNonterms g@(Grammar n t s p) prev
-    | prev == curr = prev
+    | prev == curr = curr
     | otherwise = terminalNonterms g curr
     where curr = filterRulesRight p (t++prev)
 
@@ -25,5 +25,22 @@ filterRules (r@(Rule left right):xs) nt s
     | otherwise = filterRules xs nt s
 filterRules [] _ _ = []
 
-simplify :: Grammar -> Grammar
-simplify g = g
+simplifyFull :: Grammar -> Grammar
+simplifyFull g@(Grammar n t s p) =
+    Grammar vn vt s (filterRules g1p vn (vt++vn))
+    where
+        g1@(Grammar _ _ _ g1p) = firstStep g
+        (vn, vt) = removeUnreachable g1 [s]
+
+removeUnreachable :: Grammar -> [Nonterm] -> ([Nonterm], [Term])
+removeUnreachable g@(Grammar n t s p) prev
+    | prev == curr = (curr, rulesRightSymbols prevRules t)
+    | otherwise = removeUnreachable g curr
+    where
+        prevRules = filterRules p prev (n++t)
+        curr = prev `union` rulesRightSymbols prevRules n
+
+rulesRightSymbols :: [Rule] -> [Symbol] -> [Symbol]
+rulesRightSymbols (Rule _ right : xs) s =
+    (right `intersect` s) `union` rulesRightSymbols xs s
+rulesRightSymbols [] _ = []

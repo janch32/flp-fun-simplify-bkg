@@ -1,31 +1,21 @@
 module Common where
 
 type Nonterm = Char
-
 type Term = Char
-
 type Symbol = Char
 
 data Rule = Rule Nonterm [Symbol]
-    deriving Show
 
 data Grammar = Grammar [Nonterm] [Term] Nonterm [Rule]
-    deriving Show
 
+union :: (Eq a) => [a] -> [a] -> [a]
+union (x:xs) y
+    | x `elem` y = union xs y
+    | otherwise = x : union xs y
+union [] y = y
 
-grammarToStr :: Grammar -> String
-grammarToStr (Grammar nt t first rules) =
-    symbolsToStr nt ++ "\n" ++ symbolsToStr t ++ ['\n', first,'\n'] ++ rulesToStr rules
-
-symbolsToStr :: [Symbol] -> String
-symbolsToStr [x] = [x]
-symbolsToStr (x:xs) = x : ',' : symbolsToStr xs
-symbolsToStr [] = ""
-
-rulesToStr :: [Rule] -> String
-rulesToStr (Rule nt s:xs) = nt : "->" ++ ruleSymbolsToStr s ++ "\n" ++ rulesToStr xs
-rulesToStr [] = []
-
-ruleSymbolsToStr :: [Symbol] -> String
-ruleSymbolsToStr [s] = [s]
-ruleSymbolsToStr (s:xs) = s : ruleSymbolsToStr xs
+intersect :: (Eq a) => [a] -> [a] -> [a]
+intersect (x:xs) y
+    | x `elem` y = x : intersect xs y
+    | otherwise = intersect xs y
+intersect [] _ = []

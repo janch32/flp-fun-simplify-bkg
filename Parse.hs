@@ -38,13 +38,14 @@ parseFirst (x:'\n':xs) =
 parseFirst s = error ("unexpected sequence '" ++ s ++ "' while parsing first rule")
 
 parseRule :: [Char] -> [Rule]
+parseRule [] = []
+parseRule (x:'-':'>':'#':'\n':xs) =
+    Rule (charToNonTerm x) []:parseRule xs
 parseRule (x:'-':'>':xs) =
-    Rule (charToNonTerm x) right:rules
+    Rule (charToNonTerm x) right:parseRule next
     where
         (right, next) = parseRuleRight xs
-        rules = parseRule next
 
-parseRule [] = []
 parseRule s = error ("unexpected sequence '" ++ s ++ "' while parsing rules")
 
 parseRuleRight :: [Char] -> ([Nonterm], [Symbol])
@@ -53,6 +54,8 @@ parseRuleRight (x:xs) =
     (charToSymbol x : sym, rest)
     where
         (sym, rest) = parseRuleRight xs
+
+parseRuleRight s = error ("unexpected sequence '" ++ s ++ "' while parsing rules")
 
 charToTerm :: Char -> Term
 charToTerm ch
@@ -66,16 +69,14 @@ charToNonTerm ch
 
 charToSymbol :: Char -> Symbol
 charToSymbol ch
-    | isAsciiUpper ch || isAsciiLower ch || ch == '#' = ch
-    | otherwise = error (ch:" is not a valid rule symbol (a-z, A-Z or #)")
+    | isAsciiUpper ch || isAsciiLower ch = ch
+    | otherwise = error (ch:" is not a valid rule symbol (a-z, A-Z)")
 
 validRules :: [Rule] -> [Term] -> [Nonterm] -> Bool
+validRules [] _ _ = True
 validRules (Rule rnt s:xs) t nt =
     rnt `elem` nt && validRuleSymbol s (t ++ nt) && validRules xs t nt
-validRules [] _ _ = True
 
 validRuleSymbol :: [Symbol] -> [Symbol] -> Bool
-validRuleSymbol [] _ = False
-validRuleSymbol ('#':_:_) _ = False
-validRuleSymbol [s] ref = s `elem` ref || s == '#'
+validRuleSymbol [] _ = True
 validRuleSymbol (s:xs) ref = s `elem` ref && validRuleSymbol xs ref
