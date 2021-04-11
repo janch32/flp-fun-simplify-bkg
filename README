@@ -1,0 +1,30 @@
+Funkcionální projekt do předmětu FLP 2021
+Varianta: simplify-bkg
+Autor: Jan Chaloupka (xchalo16)
+
+
+Implementace odstranění zbytečných pravidel bezkontextové gramatiky v jazyce
+Haskell. Program načte ze souboru nebo standardního vstupu gramatiku, upraví
+podle zvoleného režimu a vypíše ve stejném formátu gramatiku na standardní
+výstup. Program je možné přeložit příkazem 'make', který po úspěšném překladu
+vytvoří spustitelný soubor 'simplify-bkg'.
+
+
+Program je možné spustit s následujícími parametry:
+simplify-bkg -i12 [soubor]
+
+  -i - Vypíše načtenou gramatiku bez modifikací
+
+  -1 - Provede první krok odstranění symbolů, tak, jak je definování v opoře
+       předmětu TIN[1] (algoritmus 4.3) a výslednou gramatiku vypíše
+
+  -2 - Kompletně aplikuje algorimus 4.3 na vstupní gramatiku a výsledek vypíše
+
+  -h - Zobrazí nápovědu programu
+
+Je možné zadat pouze jeden přepínač a to vždy na první pozici. Vstupní soubor
+nemusí být definovaný, v tom případě se gramatika načte ze standardního vstupu.
+
+
+[1] Odkaz na studijní text předmětu TIN -
+https://www.fit.vutbr.cz/study/courses/TIN/public/Texty/TIN-studijni-text.pdf
